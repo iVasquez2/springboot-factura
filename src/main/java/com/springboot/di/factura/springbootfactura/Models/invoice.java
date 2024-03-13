@@ -3,6 +3,7 @@ package com.springboot.di.factura.springbootfactura.Models;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,9 +12,10 @@ public class invoice {
 
     @Autowired
     private Client client;
-    @Value("${invoice.description}")
+    @Value("${invoice.description.office}")
     private String description;
     @Autowired
+    @Qualifier("itemsInvoiceOffice") //Permite la inyeccion de la segunda factura
     private List <Item> items;
 
     public Client getClient() {
@@ -35,5 +37,20 @@ public class invoice {
         this.items = items;
     }
 
-    
+    public int getTotal()
+    {
+        int total = 0;
+        //Itineracion clasica con un ciclo for each
+        for (Item item : items) {
+            total += item.getImport(); 
+        }
+
+        //Itineracion con programacion funcional
+        /*
+         * int total = items.stream()
+         * .map(item -> item.getImport())
+         * .reduce(0, (sum, importe) -> sum + importe);
+         */
+        return total;
+    }
 }
